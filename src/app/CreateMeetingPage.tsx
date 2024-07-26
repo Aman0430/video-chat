@@ -11,9 +11,16 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@clerk/nextjs";
-import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { Loader2 } from "lucide-react";
+import {
+  Call,
+  MemberRequest,
+  useStreamVideoClient,
+} from "@stream-io/video-react-sdk";
+import { Copy, Loader2, Send } from "lucide-react";
 import { useState } from "react";
+import { getUserIds } from "./action";
+import Link from "next/link";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -38,10 +45,30 @@ const CreateMeetingPage = (props: Props) => {
     try {
       const id = crypto.randomUUID();
 
-      const call = client.call("default", id);
+      const callType = participantsInput ? "private-meeting" : "default";
+
+      const call = client.call(callType, id);
+
+      const memberEmails = participantsInput
+        .split(",")
+        .map((email) => email.trim());
+      const memberIds = await getUserIds(memberEmails);
+      const members: MemberRequest[] = memberIds
+        .map((id) => ({
+          user_id: id,
+          role: "call_member",
+        }))
+        .concat({ user_id: user.id, role: "call_member" })
+        .filter(
+          (v, i, a) => a.findIndex((v2) => v2.user_id === v.user_id) === i,
+        );
+
+      const starts_at = new Date(startTimeInput || Date.now()).toISOString();
 
       await call.getOrCreate({
         data: {
+          starts_at,
+          members,
           custom: { description: descriptionInput },
         },
       });
@@ -49,18 +76,20 @@ const CreateMeetingPage = (props: Props) => {
       setCall(call);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong. Please try again.");
+      toast("Something went wrong", {
+        description: "Please try again.",
+      });
     }
   };
 
   return (
     <div className="flex flex-col items-center space-y-10">
-      <h1 className="mb-3 text-center text-4xl font-bold text-gray-700">
+      <h1 className="mb-3 text-center text-4xl font-bold text-gray-800 dark:text-white">
         Welcome {user.username}!👋
       </h1>
 
       <BackgroundGradient className="max-w-sm rounded-[22px] bg-white dark:bg-zinc-900">
-        <Card className="w-80 rounded-[22px] bg-gradient-to-r from-fuchsia-600 to-purple-600">
+        <Card className="w-80 rounded-[22px] border-none bg-gradient-to-r from-fuchsia-900 to-purple-900">
           <CardHeader className="text-center text-2xl font-bold text-gray-200">
             Create a new meeting
           </CardHeader>
@@ -79,16 +108,15 @@ const CreateMeetingPage = (props: Props) => {
                 onChange={setParticipantsInput}
               />
             </CardDescription>
-            <CardFooter className="flex flex-col pt-4">
-              <Button
-                variant={"secondary"}
-                onClick={createMeeting}
-                className="w-full"
-              >
-                Create
-              </Button>
-              {call && <MeetingLink call={call} />}
-            </CardFooter>
+            <Button
+              variant={"secondary"}
+              onClick={createMeeting}
+              className="mt-4 w-full"
+              onWaiting={() => <Loader2 className="animate-spin" />}
+            >
+              Create
+            </Button>
+            {call && <MeetingLink call={call} />}
           </CardContent>
         </Card>
       </BackgroundGradient>
@@ -237,5 +265,58 @@ interface MeetingLinkProps {
 const MeetingLink = ({ call }: MeetingLinkProps) => {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
 
-  return <div className="text-center">{meetingLink}</div>;
+  return (
+    <div className="mt-2 flex flex-row items-center justify-between gap-3 text-center">
+      <Button
+        className="w-full gap-2"
+        variant={"destructive"}
+        onClick={() => {
+          navigator.clipboard.writeText(meetingLink);
+          toast("Copied to clipboard", {
+            description: "Meeting Link is copied successfully",
+          });
+        }}
+      >
+        Copy <Copy />
+      </Button>
+      <Button className="w-full gap-2" variant={"destructive"}>
+        <Link
+          href={getMailToLink(
+            meetingLink,
+            call.state.startsAt,
+            call.state.custom.description,
+          )}
+          target="_blank"
+        >
+          Send
+        </Link>
+        <Send />
+      </Button>
+    </div>
+  );
+};
+
+const getMailToLink = (
+  meetingLink: string,
+  startsAt?: Date,
+  description?: string,
+) => {
+  const startDateFormatted = startsAt
+    ? startsAt.toLocaleString("en-US", {
+        dateStyle: "full",
+        timeStyle: "short",
+      })
+    : undefined;
+
+  const subject =
+    "Join my meeting" + (startDateFormatted ? ` at ${startDateFormatted}` : "");
+
+  const body =
+    `Join my meeting at ${meetingLink}.` +
+    (startDateFormatted
+      ? `\n\nThe meeting starts at ${startDateFormatted}.`
+      : "") +
+    (description ? `\n\nDescription: ${description}` : "");
+
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 };

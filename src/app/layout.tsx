@@ -5,6 +5,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/Navbar";
 import ClientProvider from "./ClientProvider";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +24,18 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>
+        <body className={cn(inter.className)}>
           <ClientProvider>
-            <Navbar />
-            <main className="mx-auto max-w-7xl px-3 py-6">{children}</main>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Navbar />
+              <main className="mx-auto max-w-7xl px-3 py-6">{children}</main>
+              <Toaster />
+            </ThemeProvider>
           </ClientProvider>
         </body>
       </html>
