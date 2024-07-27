@@ -88,38 +88,36 @@ const CreateMeetingPage = (props: Props) => {
         Welcome {user.username}!👋
       </h1>
 
-      <BackgroundGradient className="max-w-sm rounded-[22px] bg-white dark:bg-zinc-900">
-        <Card className="w-80 rounded-[22px] border-none bg-gradient-to-r from-fuchsia-900 to-purple-900">
-          <CardHeader className="text-center text-2xl font-bold text-gray-200">
-            Create a new meeting
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="space-y-10 text-white">
-              <DescriptionInput
-                value={descriptionInput}
-                onChange={setDescriptionInput}
-              />
-              <StartTimeInput
-                value={startTimeInput}
-                onChange={setStartTimeInput}
-              />
-              <ParticipantsInput
-                value={participantsInput}
-                onChange={setParticipantsInput}
-              />
-            </CardDescription>
-            <Button
-              variant={"secondary"}
-              onClick={createMeeting}
-              className="mt-4 w-full"
-              onWaiting={() => <Loader2 className="animate-spin" />}
-            >
-              Create
-            </Button>
-            {call && <MeetingLink call={call} />}
-          </CardContent>
-        </Card>
-      </BackgroundGradient>
+      <Card className="w-80 rounded-md bg-primary lg:w-1/3">
+        <CardHeader className="text-center text-2xl font-bold text-gray-200">
+          Create a new meeting
+        </CardHeader>
+        <CardContent>
+          <CardDescription className="space-y-10 text-white">
+            <DescriptionInput
+              value={descriptionInput}
+              onChange={setDescriptionInput}
+            />
+            <StartTimeInput
+              value={startTimeInput}
+              onChange={setStartTimeInput}
+            />
+            <ParticipantsInput
+              value={participantsInput}
+              onChange={setParticipantsInput}
+            />
+          </CardDescription>
+          <Button
+            variant={"secondary"}
+            onClick={createMeeting}
+            className="mt-4 w-full"
+            onWaiting={() => <Loader2 className="animate-spin" />}
+          >
+            Create
+          </Button>
+          {call && <MeetingLink call={call} />}
+        </CardContent>
+      </Card>
     </div>
   );
 };

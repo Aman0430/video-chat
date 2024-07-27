@@ -15,11 +15,12 @@ const Navbar = (props: Props) => {
         <Link href="/" className="flex gap-2">
           New meeting <CalendarPlus />
         </Link>
-        <ThemeSwitcher />
+
         {user && (
           <div className="flex items-center gap-5">
             <Link href="/meetings">Meetings</Link>
             <UserButton />
+            <ThemeSwitcher />
           </div>
         )}
       </div>
