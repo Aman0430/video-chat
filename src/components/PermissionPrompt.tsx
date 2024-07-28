@@ -1,6 +1,6 @@
 import { Mic, Webcam } from "lucide-react";
 
-export const PermissionPrompt = () => {
+const PermissionPrompt = () => {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="flex items-center gap-3">

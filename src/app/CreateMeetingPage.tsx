@@ -220,7 +220,7 @@ interface ParticipantsInputProps {
   onChange: (value: string) => void;
 }
 
-function ParticipantsInput({ value, onChange }: ParticipantsInputProps) {
+const ParticipantsInput = ({ value, onChange }: ParticipantsInputProps) => {
   const [active, setActive] = useState(false);
 
   return (
@@ -254,7 +254,7 @@ function ParticipantsInput({ value, onChange }: ParticipantsInputProps) {
       )}
     </div>
   );
-}
+};
 
 interface MeetingLinkProps {
   call: Call;

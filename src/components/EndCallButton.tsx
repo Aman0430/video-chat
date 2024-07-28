@@ -2,7 +2,7 @@ import useStreamCall from "@/app/hooks/useStreamCall";
 import { useCallStateHooks } from "@stream-io/video-react-sdk";
 import { Button } from "./ui/button";
 
-export const EndCallButton = () => {
+const EndCallButton = () => {
   const call = useStreamCall();
 
   const { useLocalParticipant } = useCallStateHooks();
