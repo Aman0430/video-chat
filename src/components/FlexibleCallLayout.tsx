@@ -40,18 +40,18 @@ interface CallLayoutButtonsProps {
 
 function CallLayoutButtons({ layout, setLayout }: CallLayoutButtonsProps) {
   return (
-    <div className="mx-auto w-fit space-x-4">
-      <Button variant={"outline"} onClick={() => setLayout("speaker-vert")}>
+    <div className="mx-auto w-fit space-x-6">
+      <Button onClick={() => setLayout("speaker-vert")}>
         <BetweenVerticalEnd
           className={layout !== "speaker-vert" ? "text-gray-400" : ""}
         />
       </Button>
-      <Button variant={"outline"} onClick={() => setLayout("speaker-horiz")}>
+      <Button onClick={() => setLayout("speaker-horiz")}>
         <BetweenHorizonalEnd
           className={layout !== "speaker-horiz" ? "text-gray-400" : ""}
         />
       </Button>
-      <Button variant={"outline"} onClick={() => setLayout("grid")}>
+      <Button onClick={() => setLayout("grid")}>
         <LayoutGrid className={layout !== "grid" ? "text-gray-400" : ""} />
       </Button>
     </div>
