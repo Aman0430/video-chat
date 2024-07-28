@@ -22,22 +22,18 @@ import { getUserIds } from "./action";
 import Link from "next/link";
 import { toast } from "sonner";
 
-type Props = {};
-
-const CreateMeetingPage = (props: Props) => {
-  const client = useStreamVideoClient();
-  const { user } = useUser();
-  if (!client || !user) {
-    return <Loader2 className="mx-auto animate-spin" />;
-  }
-
+export default function CreateMeetingPage() {
   const [descriptionInput, setDescriptionInput] = useState("");
   const [startTimeInput, setStartTimeInput] = useState("");
   const [participantsInput, setParticipantsInput] = useState("");
 
   const [call, setCall] = useState<Call>();
 
-  const createMeeting = async () => {
+  const client = useStreamVideoClient();
+
+  const { user } = useUser();
+
+  async function createMeeting() {
     if (!client || !user) {
       return;
     }
@@ -52,12 +48,11 @@ const CreateMeetingPage = (props: Props) => {
       const memberEmails = participantsInput
         .split(",")
         .map((email) => email.trim());
+
       const memberIds = await getUserIds(memberEmails);
+
       const members: MemberRequest[] = memberIds
-        .map((id) => ({
-          user_id: id,
-          role: "call_member",
-        }))
+        .map((id) => ({ user_id: id, role: "call_member" }))
         .concat({ user_id: user.id, role: "call_member" })
         .filter(
           (v, i, a) => a.findIndex((v2) => v2.user_id === v.user_id) === i,
@@ -76,11 +71,13 @@ const CreateMeetingPage = (props: Props) => {
       setCall(call);
     } catch (error) {
       console.error(error);
-      toast("Something went wrong", {
-        description: "Please try again.",
-      });
+      toast("Something went wrong", { description: "Please try again later." });
     }
-  };
+  }
+
+  if (!client || !user) {
+    return <Loader2 className="mx-auto animate-spin" />;
+  }
 
   return (
     <div className="flex flex-col items-center space-y-10">
@@ -120,16 +117,14 @@ const CreateMeetingPage = (props: Props) => {
       </Card>
     </div>
   );
-};
-
-export default CreateMeetingPage;
+}
 
 interface DescriptionInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const DescriptionInput = ({ value, onChange }: DescriptionInputProps) => {
+function DescriptionInput({ value, onChange }: DescriptionInputProps) {
   const [active, setActive] = useState(false);
 
   return (
@@ -159,14 +154,14 @@ const DescriptionInput = ({ value, onChange }: DescriptionInputProps) => {
       )}
     </div>
   );
-};
+}
 
 interface StartTimeInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const StartTimeInput = ({ value, onChange }: StartTimeInputProps) => {
+function StartTimeInput({ value, onChange }: StartTimeInputProps) {
   const [active, setActive] = useState(false);
   const dateTimeLocalNow = new Date(
     new Date().getTime() - new Date().getTimezoneOffset() * 60_000,
@@ -213,14 +208,14 @@ const StartTimeInput = ({ value, onChange }: StartTimeInputProps) => {
       )}
     </div>
   );
-};
+}
 
 interface ParticipantsInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const ParticipantsInput = ({ value, onChange }: ParticipantsInputProps) => {
+function ParticipantsInput({ value, onChange }: ParticipantsInputProps) {
   const [active, setActive] = useState(false);
 
   return (
@@ -254,13 +249,13 @@ const ParticipantsInput = ({ value, onChange }: ParticipantsInputProps) => {
       )}
     </div>
   );
-};
+}
 
 interface MeetingLinkProps {
   call: Call;
 }
 
-const MeetingLink = ({ call }: MeetingLinkProps) => {
+function MeetingLink({ call }: MeetingLinkProps) {
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
 
   return (
@@ -292,13 +287,13 @@ const MeetingLink = ({ call }: MeetingLinkProps) => {
       </Button>
     </div>
   );
-};
+}
 
-const getMailToLink = (
+function getMailToLink(
   meetingLink: string,
   startsAt?: Date,
   description?: string,
-) => {
+) {
   const startDateFormatted = startsAt
     ? startsAt.toLocaleString("en-US", {
         dateStyle: "full",
@@ -317,4 +312,4 @@ const getMailToLink = (
     (description ? `\n\nDescription: ${description}` : "");
 
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-};
+}
