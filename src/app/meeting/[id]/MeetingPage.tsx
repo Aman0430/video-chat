@@ -3,12 +3,14 @@
 import useLoadCall from "@/app/hooks/useLoadCall";
 import useStreamCall from "@/app/hooks/useStreamCall";
 import AudioVolumeIndicator from "@/components/AudioVolumeIndicator";
+import FlexibleCallLayout from "@/components/FlexibleCallLayout";
 import PermissionPrompt from "@/components/PermissionPrompt";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import {
   Call,
   CallControls,
+  CallingState,
   DeviceSettings,
   SpeakerLayout,
   StreamCall,
@@ -94,7 +96,7 @@ const MeetingScreen = () => {
         </p>
       )}
       {setupComplete ? (
-        <SpeakerLayout />
+        <CallUI />
       ) : (
         <SetupUI onSetupComplete={handleSetupComplete} />
       )}
@@ -157,11 +159,23 @@ const SetupUI = ({ onSetupComplete }: SetupUIProps) => {
   );
 };
 
+const CallUI = () => {
+  const { useCallCallingState } = useCallStateHooks();
+
+  const callingState = useCallCallingState();
+
+  if (callingState !== CallingState.JOINED) {
+    return <Loader2 className="mx-auto animate-spin" />;
+  }
+
+  return <FlexibleCallLayout />;
+};
+
 const UpcomingMeetingScreen = () => {
   const call = useStreamCall();
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex h-screen flex-col items-center justify-center gap-6">
       <p>
         This meeting has not started yet. It will start at(" ")
         <span className="font-bold">
@@ -183,7 +197,7 @@ const UpcomingMeetingScreen = () => {
 
 const MeetingEndedScreen = () => {
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="flex h-screen flex-col items-center justify-center gap-5">
       <p className="font-bold">This meeting has ended</p>
       <Link href={"/"}>
         <Button variant={"link"}>Go Home</Button>
