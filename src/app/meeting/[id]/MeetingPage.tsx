@@ -178,7 +178,7 @@ const UpcomingMeetingScreen = () => {
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-6">
       <p>
-        This meeting has not started yet. It will start at(" ")
+        This meeting has not started yet. It will start at{" "}
         <span className="font-bold">
           {call.state.startsAt?.toLocaleString()}
         </span>
