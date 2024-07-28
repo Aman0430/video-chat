@@ -5,6 +5,7 @@ import useStreamCall from "@/app/hooks/useStreamCall";
 import AudioVolumeIndicator from "@/components/AudioVolumeIndicator";
 import FlexibleCallLayout from "@/components/FlexibleCallLayout";
 import PermissionPrompt from "@/components/PermissionPrompt";
+import RecordingList from "@/components/RecordingsList";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -202,6 +203,10 @@ const MeetingEndedScreen = () => {
       <Link href={"/"}>
         <Button variant={"link"}>Go Home</Button>
       </Link>
+      <div className="space-y-2">
+        <h2 className="text-center text-xl font-bold">Recordings</h2>
+        <RecordingList />
+      </div>
     </div>
   );
 };
