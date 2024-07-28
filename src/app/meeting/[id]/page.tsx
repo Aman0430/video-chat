@@ -18,13 +18,13 @@ export default async function Page({
   params: { id },
   searchParams: { guest },
 }: PageProps) {
-  // const user = await currentUser();
+  const user = await currentUser();
 
-  // const guestMode = guest === "true";
+  const guestMode = guest === "true";
 
-  // if (!user && !guestMode) {
-  //   return <MeetingLoginPage />;
-  // }
+  if (!user && !guestMode) {
+    return <MeetingLoginPage />;
+  }
 
   return <MeetingPage id={id} />;
 }
